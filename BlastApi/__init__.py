@@ -9,31 +9,31 @@ class BlastClient:
     def __init__(self):
         self.test = "test"
 
-    def search(self, query, database, program, **params):
+    def search(self, query, database, program, *, filtering=None, format_type=None, expect=None, nucl_reward=None,
+               nucl_penalty=None, gap_costs=None, matrix=None, hitlist_size=None, descriptions=None, alignments=None,
+               ncbi_gi=None, threshold=None, word_size=None, composition_based_statistics=None, num_threads=None):
         r"""Sends search submission.
 
         :param query: Search query. Allowed values: ['Accession', 'GI', 'FASTA']
         :param database: Name of existing database or one uploaded to blastdb_custom
         :param program: BLAST Program. One of: ['blastn', 'megablast', 'blastp', 'blastx', 'tblastn', 'tblastx']
-        :param params: (optional) Parameters for 'Put' method described in BLAST Documentation: https://ncbi.github.io/blast-cloud/dev/api.html
         :return: Tuple of request_id and estimated time in seconds until the search is completed
         """
-        if not params:
-            params = dict()
+        params = dict()
         params = dict(map(lambda key: (key.upper(), params[key]), params))
         params["CMD"] = "Put"
         params["QUERY"] = query
         params["DATABASE"] = database
         params["PROGRAM"] = program
         response = requests.get(_API_URL, params)
-        qblast_info = self._crop_qblast_info(response.text)
+        qblast_info = self.__crop_qblast_info__(response.text)
         return qblast_info["RID"], qblast_info["RTOE"]
 
     def check_submission_status(self, request_id):
         response = requests.get(_API_URL, {"CMD": "Get", "FORMAT_OBJECT": "SearchInfo", "RID": request_id})
-        return self._crop_qblast_info(response.text)
+        return self.__crop_qblast_info__(response.text)
 
-    def _crop_qblast_info(self, html):
+    def __crop_qblast_info__(self, html):
         search_results = re.findall('QBlastInfoBegin(.*?)QBlastInfoEnd', html, flags=re.DOTALL)
         if search_results:
             result_dict = dict()
@@ -50,3 +50,5 @@ class BlastClient:
                         result_dict[key] = value
             return result_dict
         return dict()
+
+    def __validate_search_params(self):
