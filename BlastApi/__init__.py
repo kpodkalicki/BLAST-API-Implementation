@@ -1,5 +1,6 @@
 import inspect
 import re
+import shutil
 
 import requests
 
@@ -9,8 +10,6 @@ _API_URL = "https://blast.ncbi.nlm.nih.gov/Blast.cgi"
 
 
 class BlastClient:
-    def __init__(self):
-        self.validator = BlastSearchValidator()
 
     def search(self, query, database, program, *, filter=None, format_type=None, expect=None, nucl_reward=None,
                nucl_penalty=None, gapcosts=None, matrix=None, hitlist_size=None, descriptions=None, alignments=None,
@@ -24,15 +23,8 @@ class BlastClient:
         """
 
         frame = inspect.currentframe()
-        arg_names, _, _, values = inspect.getargvalues(frame)
-        arg_names.remove("self")
-        params = {arg_name.upper(): values[arg_name] for arg_name in arg_names if values[arg_name]}
-        params["CMD"]= "Put"
-
-        errors = self.validator.validate_params(params)
-
-        if errors:
-            raise AttributeError(errors)
+        params = self._get_params(frame)
+        params["CMD"] = "Put"
 
         response = requests.get(_API_URL, params)
         qblast_info = self.__cropp_qblast_info__(response.text)
@@ -41,6 +33,23 @@ class BlastClient:
     def check_submission_status(self, request_id):
         response = requests.get(_API_URL, {"CMD": "Get", "FORMAT_OBJECT": "SearchInfo", "RID": request_id})
         return self.__cropp_qblast_info__(response.text)
+
+    def get_results(self, request_id, *, format_type='HTML', hitlist_size=None, descriptions=None, alignments=None,
+                    ncbi_gi=None, format_object=None, results_file_path='response.zip'):
+        frame = inspect.currentframe()
+        params = self._get_params(frame)
+        params['CMD'] = 'Get'
+
+        if format_type == 'XML2' or format_type == 'JSON2':
+            response = requests.get(_API_URL, params, stream=True)
+            with open(results_file_path, 'wb') as file:
+                shutil.copyfileobj(response.raw, file)
+            results = open(results_file_path, 'w')
+        else:
+            response = requests.get(_API_URL, params)
+            results = response.text
+
+        return results
 
     def __cropp_qblast_info__(self, html):
         search_results = re.findall('QBlastInfoBegin(.*?)QBlastInfoEnd', html, flags=re.DOTALL)
@@ -59,3 +68,13 @@ class BlastClient:
                         result_dict[key] = value
             return result_dict
         return dict()
+
+    def _get_params(self, frame):
+        arg_names, _, _, values = inspect.getargvalues(frame)
+        arg_names.remove("self")
+        params = {arg_name.upper(): values[arg_name] for arg_name in arg_names if values[arg_name]}
+        if 'REQUEST_ID' in params:
+            params['RID'] = params['REQUEST_ID']
+            del params['REQUEST_ID']
+        return params
+
