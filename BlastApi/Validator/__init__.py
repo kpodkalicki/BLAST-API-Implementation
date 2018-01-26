@@ -5,34 +5,45 @@ class BlastValidator:
     def __init__(self, allowed_values):
         self.allowed_values = allowed_values
 
-    def __validate_not_none__(self, param_name, value, errors,):
+    def _validate_not_none(self, param_name, value, errors):
         if value is None:
-            errors.append("'" + param_name + "' must be specified")
+            errors.append("Parameter '" + param_name.lower() + "' must be specified")
+            return False
+        return True
 
-    def __validate_value__(self, param_name, value, errors, *, validate_not_none=False):
-        if validate_not_none:
-            self.__validate_not_none__(param_name, value, errors)
-            return
-        if value is None or value in self.allowed_values[param_name]:
-            return
-        errors.append("Invalid '" + param_name + "' parameter")
+    def _validate_not_empty(self, param_name, value, errors):
+        if value is not None and len(value) == 0:
+            errors.append("Parameter '" + param_name.lower() + "' cannot be empty")
+            return False
+        return True
 
-    def __validate_format_type__(self, format_type, errors):
-        if format_type is None or format_type in __FORMAT_TYPES__:
+    def _validate_value(self, param_name, value, errors, *, not_none=False):
+        not_none_result = True
+        if not_none:
+            not_none_result = self._validate_not_none(param_name, value, errors)
+
+        if value not in self.allowed_values[param_name] and value is not None:
+            errors.append("Invalid '" + param_name.lower() + "' parameter")
+            return False
+
+        return not_none_result
+
+    def _validate_format_type(self, format_type, errors):
+        if format_type is None or len(format_type) == 0 or format_type in __FORMAT_TYPES__:
             return True
-        errors.append("Invalid 'FORMAT_TYPE' parameter")
+        errors.append("Invalid 'format_type' parameter")
 
-    def __validate_grater_than_zero__(self, value, parameter_name, errors):
+    def _validate_grater_than_zero(self, value, parameter_name, errors):
         if value is None or value > 0:
             return True
-        errors.append("Invalid '" + parameter_name + "' parameter")
+        errors.append("Invalid '" + parameter_name.lower() + "' parameter")
 
-    def __validate_less_than_zero__(self, value, parameter_name, errors):
+    def _validate_less_than_zero(self, value, parameter_name, errors):
         if value is None or value < 0:
             return True
-        errors.append("Invalid '" + parameter_name + "' parameter")
+        errors.append("Invalid '" + parameter_name.lower() + "' parameter")
 
-    def __validate_ncbi_gi__(self, ncbi_gi, errors):
+    def _validate_ncbi_gi(self, ncbi_gi, errors):
         if ncbi_gi is None or (ncbi_gi == "F" or ncbi_gi == "T"):
             return True
-        errors.append("Invalid 'NCBI_GI' parameter")
+        errors.append("Invalid 'ncbi_gi' parameter")

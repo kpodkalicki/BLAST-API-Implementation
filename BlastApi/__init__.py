@@ -1,3 +1,4 @@
+import collections
 import inspect
 import re
 import shutil
@@ -10,6 +11,8 @@ _API_URL = "https://blast.ncbi.nlm.nih.gov/Blast.cgi"
 
 
 class BlastClient:
+    def __init__(self):
+        self.validator = BlastSearchValidator()
 
     def search(self, query, database, program, *, filter=None, format_type=None, expect=None, nucl_reward=None,
                nucl_penalty=None, gapcosts=None, matrix=None, hitlist_size=None, descriptions=None, alignments=None,
@@ -25,6 +28,10 @@ class BlastClient:
         frame = inspect.currentframe()
         params = self._get_params(frame)
         params["CMD"] = "Put"
+
+        errors = self.validator.validate_params(params)
+        if errors:
+            raise AttributeError(errors)
 
         response = requests.get(_API_URL, params)
         qblast_info = self.__cropp_qblast_info__(response.text)
@@ -76,5 +83,8 @@ class BlastClient:
         if 'REQUEST_ID' in params:
             params['RID'] = params['REQUEST_ID']
             del params['REQUEST_ID']
+        if 'GAPCOSTS' in params and isinstance(params['GAPCOSTS'], collections.Iterable):
+            params['GAPCOSTS'] = ' '.join(map(lambda x: str(x), params['GAPCOSTS']))
+
         return params
 
