@@ -1,9 +1,15 @@
+import abc
+
 __FORMAT_TYPES__ = {'HTML', 'Text', 'XML', 'XML2', 'JSON2', 'Tabular'}
 
 
 class BlastValidator:
     def __init__(self, allowed_values):
         self.allowed_values = allowed_values
+
+    @abc.abstractclassmethod
+    def validate_params(self, params):
+        """ Validates given params """
 
     def _validate_not_none(self, param_name, value, errors):
         if value is None:

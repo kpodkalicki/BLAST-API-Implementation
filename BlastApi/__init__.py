@@ -5,6 +5,7 @@ import shutil
 
 import requests
 
+from BlastApi.Validator.BlastResultsValidator import BlastResultsValidator
 from BlastApi.Validator.BlastSearchValidator import BlastSearchValidator
 
 _API_URL = "https://blast.ncbi.nlm.nih.gov/Blast.cgi"
@@ -12,7 +13,8 @@ _API_URL = "https://blast.ncbi.nlm.nih.gov/Blast.cgi"
 
 class BlastClient:
     def __init__(self):
-        self.validator = BlastSearchValidator()
+        self.search_validator = BlastSearchValidator()
+        self.result_validator = BlastResultsValidator()
 
     def search(self, query, database, program, *, filter=None, format_type=None, expect=None, nucl_reward=None,
                nucl_penalty=None, gapcosts=None, matrix=None, hitlist_size=None, descriptions=None, alignments=None,
@@ -29,7 +31,7 @@ class BlastClient:
         params = self._get_params(frame)
         params["CMD"] = "Put"
 
-        errors = self.validator.validate_params(params)
+        errors = self.search_validator.validate_params(params)
         if errors:
             raise AttributeError(errors)
 
@@ -39,13 +41,17 @@ class BlastClient:
 
     def check_submission_status(self, request_id):
         response = requests.get(_API_URL, {"CMD": "Get", "FORMAT_OBJECT": "SearchInfo", "RID": request_id})
-        return self.__cropp_qblast_info__(response.text)
+        return self.__cropp_qblast_info__(response.text)['Status']
 
     def get_results(self, request_id, *, format_type='HTML', hitlist_size=None, descriptions=None, alignments=None,
                     ncbi_gi=None, format_object=None, results_file_path='response.zip'):
         frame = inspect.currentframe()
         params = self._get_params(frame)
         params['CMD'] = 'Get'
+
+        errors = self.result_validator.validate_params(params)
+        if errors:
+            raise AttributeError(errors)
 
         if format_type == 'XML2' or format_type == 'JSON2':
             response = requests.get(_API_URL, params, stream=True)
