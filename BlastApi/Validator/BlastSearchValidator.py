@@ -34,6 +34,14 @@ class BlastSearchValidator(BlastValidator):
         super().__init__(allowed_values)
 
     def validate_params(self, params):
+        r"""Validates parameters for search submits to NCBI. Validated parameters are: QUERY, DATABASE, PROGRAM, FILTER,
+            FORMAT_TYPE, EXPECT, NUCL_REWARD, NUCL_PENALTY, GAPCOSTS, MATRIX, HITLIST_SIZE, DESCRIPTIONS, ALIGNMENTS,
+            NCBI_GI, THRESHOLD, WORD_SIZE, COMPOSITION_BASED_STATISTICS, NUM_THREADS
+
+        :param params: Parameters to be validated
+        :return: List of potential errors
+        """
+
         errors = []
         self._validate_not_none(_QUERY, params.get(_QUERY, None), errors)
         self._validate_not_empty(_QUERY, params.get(_QUERY, None), errors)

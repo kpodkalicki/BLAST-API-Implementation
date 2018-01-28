@@ -14,6 +14,12 @@ class BlastResultsValidator(BlastValidator):
         super().__init__(allowed_values)
 
     def validate_params(self, params):
+        r"""Validates parameters for retrieving results from NCBI. Validated parameters are: FORMAT_TYPE, HITLIST_SIZE,
+                DESCRIPTIONS, ALIGNMENTS, NCBI_GI, FORMAT_OBJECT
+
+        :param params: Parameters to be validated
+        :return: List of potential errors
+        """
         errors = []
 
         self._validate_format_type(params.get(_FORMAT_TYPE, None), errors)
