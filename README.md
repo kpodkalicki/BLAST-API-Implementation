@@ -66,7 +66,7 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
     - **`request_id`** - ID of requested search
     
 - `BlastApiClien::get_results()`
-    - **`request_id`** - ID of requested submission
+    - **`request_id`** - ID of requested search
     - `format_type` - Report type. One of: `['HTML', 'Text', 'XML', 'XML2', 'JSON2', 'Tabular']`. Default: `'HTML'`.
     - `hitlist_size` - Number of databases sequences to keep. Integer greater than zero.
     - `descriptions` - Number of descriptions to print (applies to `HTML` and `Text`). Integer greater than zero.
