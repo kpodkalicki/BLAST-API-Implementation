@@ -7,7 +7,7 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
 - Python >= 3.6
 - [requests](http://docs.python-requests.org/en/master/) 2.18.4
 
-##How to use it
+## How to use it
 1. Create new instance of `BlastApiClient`
     ```python
    bc = BlastApiClient()
@@ -78,4 +78,5 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
 
 - `BlastApiClien::wait_for_results()`
     - The same as for `BlastApiClien::check_submission_status()` and `BlastApiClien::get_results()`
+
 Parameters in **`bold`** are **required**.
