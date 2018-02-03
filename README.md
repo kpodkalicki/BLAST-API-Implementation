@@ -10,7 +10,9 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
 ## How to use it
 1. Create new instance of `BlastApiClient`
     ```python
-   bc = BlastApiClient()
+    from BlastApi import BlastClient
+    
+    bc = BlastApiClient()
     ```
 2. Launch a search using `BlastApiClien::search()` method
     ```python
