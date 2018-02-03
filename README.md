@@ -12,7 +12,7 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
     ```python
     from BlastApi import BlastClient
     
-    bc = BlastApiClient()
+    bc = BlastClient()
     ```
 2. Launch a search using `BlastApiClien::search()` method
     ```python
