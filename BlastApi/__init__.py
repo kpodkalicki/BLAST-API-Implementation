@@ -159,7 +159,8 @@ class BlastClient:
         if 'REQUEST_ID' in params:
             params['RID'] = params['REQUEST_ID']
             del params['REQUEST_ID']
-        if 'GAPCOSTS' in params and isinstance(params['GAPCOSTS'], collections.Iterable):
+        if 'GAPCOSTS' in params and isinstance(params['GAPCOSTS'], collections.Iterable) and not isinstance(
+                params['GAPCOSTS'], str):
             params['GAPCOSTS'] = ' '.join(map(lambda x: str(x), params['GAPCOSTS']))
 
         return params
