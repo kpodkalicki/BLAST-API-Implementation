@@ -8,7 +8,6 @@ from tests import toggle_params
 sys.modules['requests'] = __import__('tests.__init__')
 from tests.ResultsValidatorMock import ResultsValidatorMock
 from tests.SearchValidatorMock import SearchValidatorMock
-
 from BlastApi import BlastClient
 
 

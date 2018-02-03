@@ -29,7 +29,7 @@ class BlastClient:
         :param format_type: Report type. One of: ['HTML', 'Text', 'XML', 'XML2', 'JSON2', 'Tabular']. Default: 'HTML'.
         :param expect: Expect value. Number greater than zero.
         :param nucl_reward: Reward for matching bases (BLASTN and megaBLAST). Integer greater than zero.
-        :param gapcosts: Gap existence and extension costs. Pair of positive integers separated by a space.
+        :param gapcosts: Gap existence and extension costs. Tuple of two positive integers.
         :param matrix: Scoring matrix name. One of: ['BLOSUM45', 'BLOSUM50', 'BLOSUM62', 'BLOSUM80', 'BLOSUM90', 'PAM250',
                 'PAM30' or 'PAM70']. Default: 'BLOSUM62'
         :param hitlist_size: Number of databases sequences to keep. Integer greater than zero.
@@ -102,7 +102,7 @@ class BlastClient:
 
         return results
 
-    def wait_for_results(self, request_id, estimated_time=15, *, format_type='HTML', hitlist_size=None,
+    def wait_for_results(self, request_id, estimated_time=2, *, format_type='HTML', hitlist_size=None,
                          descriptions=None, alignments=None, ncbi_gi=None, format_object=None,
                          results_file_path='results.zip'):
         r"""Waits for availability of results and retrieves it.
