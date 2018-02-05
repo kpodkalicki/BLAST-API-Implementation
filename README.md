@@ -8,40 +8,40 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
 - [requests](http://docs.python-requests.org/en/master/) 2.18.4
 
 ## How to use it
-1. Create new instance of `BlastApiClient`
+1. Create new instance of `BlastClient`
     ```python
     from BlastApi import BlastClient
     
     bc = BlastClient()
     ```
-2. Launch a search using `BlastApiClien::search()` method
+2. Launch a search using `BlastClient::search()` method
     ```python
     request_id, estimated_time = bc.search('u00001', 'nt', 'blastn')
     ```
-3. `BlastApiClien::search()` method will return tuple of `(request_id, estimated_time)`.
+3. `BlastClient::search()` method will return tuple of `(request_id, estimated_time)`.
     - `request_id` - can be used to retrieve results
     - `estimated_time`(RTOE) - estimated time in seconds until the search is completed
-4. You can check the status of the search by using `BlastApiClien::check_submission_status()`
+4. You can check the status of the search by using `BlastClient::check_submission_status()`
     ```python
     status = bc.check_submission_status(request_id)
     ```
     Method will return `status` as one of `WAITING`, `UNKNOWN`, or `READY`.
-5. Once the search is finished, you may retrieve results by invoking `BlastApiClien::get_results()`
+5. Once the search is finished, you may retrieve results by invoking `BlastClient::get_results()`
     ```python
     results = bc.get_results(request_id)
     ```
     `HTML` is default format of results
     
-6. `BlastApiClien::wait_for_results()` can be used as a combination of `BlastApiClien::check_submission_status()` and 
-`BlastApiClien::get_results()`. It'll wait until search is finished and retrieve results.
+6. `BlastClient::wait_for_results()` can be used as a combination of `BlastClient::check_submission_status()` and 
+`BlastClient::get_results()`. It'll wait until search is finished and retrieve results.
     ```python
     results = bc.wait_for_results(request_id, estimated_time=estimated_time)
     ```
     Note that `estimated_time` parameter is optional and doesn't need to be specified. Instead every 2 seconds method 
     will check search status and when it's `READY` retrieve results
     
-## Avalilable parameters
-- `BlastApiClien::search()`
+## Available parameters
+- `BlastClient::search()`
     - **`query`** - Search query.
     - **`database`** - Name of existing database or one uploaded to blastdb_custom
     - **`program`** BLAST Program. One of: `['blastn', 'megablast', 'blastp', 'blastx', 'tblastn', 'tblastx']`
@@ -64,10 +64,10 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
     - `num_threads` - Number of virtual CPUs to use. 	Integer greater than zero (default is 1). *Supported only
             on the cloud*
             
-- `BlastApiClien::check_submission_status()`
+- `BlastClient::check_submission_status()`
     - **`request_id`** - ID of requested search
     
-- `BlastApiClien::get_results()`
+- `BlastClient::get_results()`
     - **`request_id`** - ID of requested search
     - `format_type` - Report type. One of: `['HTML', 'Text', 'XML', 'XML2', 'JSON2', 'Tabular']`. Default: `'HTML'`.
     - `hitlist_size` - Number of databases sequences to keep. Integer greater than zero.
@@ -78,7 +78,7 @@ API specification: https://ncbi.github.io/blast-cloud/dev/api.html
                 valid for retrieving results.
     - `results_file_path` - Results relative file path (applies to `XML2` and `JSON2`).
 
-- `BlastApiClien::wait_for_results()`
-    - The same as for `BlastApiClien::check_submission_status()` and `BlastApiClien::get_results()`
+- `BlastClient::wait_for_results()`
+    - The same as for `BlastClient::check_submission_status()` and `BlastClient::get_results()`
 
 Parameters in **`bold`** are **required**.
